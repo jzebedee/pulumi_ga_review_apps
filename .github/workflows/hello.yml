@@ -1,0 +1,28 @@
+name: 'Hello world'
+on:
+  workflow_dispatch:
+    inputs:
+      clientId:
+        required: true
+        type: string
+      tenantId:
+        required: true
+        type: string
+      subscriptionId:
+        required: true
+        type: string
+
+jobs:
+  cowsay:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: azure/login@v2
+      with:
+        client-id: ${{ inputs.clientId }}
+        tenant-id: ${{ inputs.tenantId }}
+        subscription-id: ${{ inputs.subscriptionId }}
+    - uses: azure/cli@v2
+      with:
+        azcliversion: latest
+        inlineScript: az account show
