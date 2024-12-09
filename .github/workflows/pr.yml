@@ -1,0 +1,22 @@
+permissions:
+  id-token: write
+  contents: read
+
+name: 'Hello world'
+on:
+  pull_request:
+
+jobs:
+  cowsay:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: azure/login@v2
+      with:
+        client-id: ${{ vars.clientId }}
+        tenant-id: ${{ vars.tenantId }}
+        subscription-id: ${{ vars.subscriptionId }}
+    - uses: azure/cli@v2
+      with:
+        azcliversion: latest
+        inlineScript: az account show
