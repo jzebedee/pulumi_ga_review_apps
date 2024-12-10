@@ -28,6 +28,7 @@ jobs:
     - uses: pulumi/auth-actions@v1
       with:
         organization: ${{ vars.pulumi_org }}
+        scope: ${{ vars.pulumi_scope }}
         requested-token-type: urn:pulumi:token-type:access_token:personal
     - uses: pulumi/actions@v6
       with:
