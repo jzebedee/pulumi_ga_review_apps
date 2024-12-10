@@ -1,1 +1,3 @@
 config:
+  pulumi_ga_review_apps:base_repo: pulumi_ga_review_apps
+  pulumi_ga_review_apps:base_org: jzebedee
