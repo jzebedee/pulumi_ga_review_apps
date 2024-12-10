@@ -7,29 +7,20 @@ on:
   pull_request:
 
 jobs:
-  cowsay:
+  build-base:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - uses: actions/setup-dotnet@v4
-      with: 
-        dotnet-version: |
-          8.0.x
-          9.0.x
-    - uses: azure/login@v2
-      with:
-        client-id: ${{ vars.clientId }}
-        tenant-id: ${{ vars.tenantId }}
-        subscription-id: ${{ vars.subscriptionId }}
-    - uses: azure/cli@v2
-      with:
-        azcliversion: latest
-        inlineScript: az account show
     - uses: pulumi/auth-actions@v1
       with:
         organization: ${{ vars.pulumi_org }}
         scope: ${{ vars.pulumi_scope }}
         requested-token-type: urn:pulumi:token-type:access_token:personal
+    - uses: actions/setup-dotnet@v4
+      with: 
+        dotnet-version: |
+          8.0.x
+          9.0.x
     - uses: pulumi/actions@v6
       with:
         command: up
@@ -37,5 +28,5 @@ jobs:
         work-dir: src/base
       env:
         ARM_USE_OIDC: true
-#        ARM_CLIENT_ID: ${{ vars.clientId }}
-#        ARM_TENANT_ID: ${{ vars.tenantId }}
+        ARM_CLIENT_ID: ${{ vars.clientId }}
+        ARM_TENANT_ID: ${{ vars.tenantId }}
