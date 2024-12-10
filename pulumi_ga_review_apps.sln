@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.002.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{A5F4C67A-BE58-4F66-9CDB-790875BA7950}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "pulumi_ga_review_apps", "src\base\pulumi_ga_review_apps.csproj", "{0D0DBCF0-C7E6-4564-8CB0-5493953F8E59}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0D0DBCF0-C7E6-4564-8CB0-5493953F8E59}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0D0DBCF0-C7E6-4564-8CB0-5493953F8E59}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0D0DBCF0-C7E6-4564-8CB0-5493953F8E59}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0D0DBCF0-C7E6-4564-8CB0-5493953F8E59}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{0D0DBCF0-C7E6-4564-8CB0-5493953F8E59} = {A5F4C67A-BE58-4F66-9CDB-790875BA7950}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0FB6B65A-373E-4F9C-9F5A-54D42FC71E37}
+	EndGlobalSection
+EndGlobal
