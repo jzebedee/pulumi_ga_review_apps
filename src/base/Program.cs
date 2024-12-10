@@ -17,8 +17,13 @@ return await Pulumi.Deployment.RunAsync(async () =>
     var subscriptionId = az.Require("subscriptionId");
     var location = az.Require("location");
 
+    var config = new Pulumi.Config();
+
+    var base_org = config.Require("base_org");
+    var base_repo = config.Require("base_repo");
+
     // base
-    var base_mi = await BuildBaseManagedIdentity(subscriptionId, location);
+    var base_mi = await BuildBaseManagedIdentity(subscriptionId, location, oidcOrg: base_org, oidcRepo: base_repo);
 
     return new Dictionary<string, object?>
     {
@@ -26,15 +31,27 @@ return await Pulumi.Deployment.RunAsync(async () =>
     };
 });
 
-static async Task<UserAssignedIdentity> BuildBaseManagedIdentity(string subscriptionId, string location)
+static async Task<UserAssignedIdentity> BuildBaseManagedIdentity(string subscriptionId, string location, string oidcOrg, string oidcRepo)
 {
+    string rgName = "rg-shared-review";
     string identityName = "mi-shared-review";
 
     var managedIdentity = new UserAssignedIdentity(identityName, new()
     {
         Location = location,
-        ResourceGroupName = "rg-shared-review",
-        ResourceName = "mi-shared-review",
+        ResourceGroupName = rgName,
+        ResourceName = identityName,
+    });
+
+    string fedCred_name = $"gh-pr_{oidcOrg}_{oidcRepo}";
+    var federatedIdentityCredential = new FederatedIdentityCredential(fedCred_name, new()
+    {
+        Audiences = ["api://AzureADTokenExchange"],
+        FederatedIdentityCredentialResourceName = fedCred_name,
+        Issuer = "https://token.actions.githubusercontent.com",
+        ResourceGroupName = rgName,
+        ResourceName = identityName,
+        Subject = $"repo:{oidcOrg}/{oidcRepo}:pull_request",
     });
 
     const string roleDefinitionId_managedIdentityContributor = "e40ec5ca-96e0-45a2-b4ff-59039f2c2b59";
