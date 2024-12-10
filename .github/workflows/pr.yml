@@ -25,6 +25,10 @@ jobs:
       with:
         azcliversion: latest
         inlineScript: az account show
+    - uses: pulumi/auth-actions@v1
+      with:
+        organization: ${{ vars.pulumi_org }}
+        requested-token-type: urn:pulumi:token-type:access_token:personal
     - uses: pulumi/actions@v6
       with:
         command: up
