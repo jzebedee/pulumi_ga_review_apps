@@ -18,7 +18,8 @@ return await Pulumi.Deployment.RunAsync(async () =>
         ResourceGroupName = rgName
     }, new()
     {
-        ImportId = rgId
+        ImportId = rgId,
+        RetainOnDelete = true
     });
 
     // Create an Azure resource (Storage Account)
