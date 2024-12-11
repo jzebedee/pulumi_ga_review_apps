@@ -28,13 +28,16 @@ return await Pulumi.Deployment.RunAsync(() =>
     if (Pulumi.Deployment.Instance is { StackName: "base" })
     {
         var base_mi = BuildBaseManagedIdentity(subscriptionId, location, oidcOrg: base_org, oidcRepo: base_repo);
+        outputs.Add("mi-shared-review:clientId", base_mi.ClientId);
         outputs.Add("mi-shared-review:principalId", base_mi.PrincipalId);
     }
     else if (config.Require("pr_number") is string pr)
     {
         var uniqueId = $"{base_org}_{base_repo}_pr{pr}";
-        var review_mi = BuildReviewManagedIdentity(subscriptionId, location, oidcOrg: base_org, oidcRepo: base_repo, uniqueId);
-        outputs.Add("mi-review-app", review_mi.Name);
+        var (review_mi, review_rg) = BuildReviewManagedIdentity(subscriptionId, location, oidcOrg: base_org, oidcRepo: base_repo, uniqueId);
+        outputs.Add("mi-review-app:clientId", review_mi.ClientId);
+        outputs.Add("mi-review-app:principalId", review_mi.PrincipalId);
+        outputs.Add("rg-review-app:name", review_rg.Name);
     }
 
     return outputs;
@@ -79,15 +82,20 @@ static UserAssignedIdentity BuildBaseManagedIdentity(string subscriptionId, stri
     return managedIdentity;
 }
 
-static UserAssignedIdentity BuildReviewManagedIdentity(string subscriptionId, string location, string oidcOrg, string oidcRepo, string uniqueId)
+static (UserAssignedIdentity, ResourceGroup) BuildReviewManagedIdentity(string subscriptionId, string location, string oidcOrg, string oidcRepo, string uniqueId)
 {
     string rgName = $"rg-review-{uniqueId}";
-    string identityName = $"mi-review-{uniqueId}";
-
-    var managedIdentity = new UserAssignedIdentity(identityName, new()
+    var resourceGroup = new ResourceGroup(rgName, new()
     {
         Location = location,
         ResourceGroupName = rgName,
+    });
+
+    string identityName = $"mi-review-{uniqueId}";
+    var managedIdentity = new UserAssignedIdentity(identityName, new()
+    {
+        Location = location,
+        ResourceGroupName = resourceGroup.Name,
         ResourceName = identityName,
     });
 
@@ -97,8 +105,8 @@ static UserAssignedIdentity BuildReviewManagedIdentity(string subscriptionId, st
         Audiences = ["api://AzureADTokenExchange"],
         FederatedIdentityCredentialResourceName = fedCred_name,
         Issuer = "https://token.actions.githubusercontent.com",
-        ResourceGroupName = rgName,
-        ResourceName = identityName,
+        ResourceGroupName = resourceGroup.Name,
+        ResourceName = managedIdentity.Name,
         Subject = $"repo:{oidcOrg}/{oidcRepo}:pull_request",
     });
 
@@ -111,9 +119,9 @@ static UserAssignedIdentity BuildReviewManagedIdentity(string subscriptionId, st
     {
         PrincipalId = managedIdentity.PrincipalId,
         PrincipalType = PrincipalType.ServicePrincipal,
-        Scope = $"/subscriptions/{subscriptionId}/resourceGroups/{rgName}",
+        Scope = resourceGroup.Name.Apply(name => $"/subscriptions/{subscriptionId}/resourceGroups/{name}"),
         RoleDefinitionId = ra_roleDefId,
     });
 
-    return managedIdentity;
+    return (managedIdentity, resourceGroup);
 }
