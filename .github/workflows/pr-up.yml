@@ -53,6 +53,7 @@ jobs:
     needs: build-review-base
     env:
       PULUMI_DIR: "src/review_app"
+      PULUMI_REVIEW_STACK: "review_pr${{ github.event.pull_request.number }}"
     steps:
     - uses: actions/checkout@v4
     - uses: pulumi/auth-actions@v1
@@ -65,12 +66,11 @@ jobs:
         dotnet-version: 8.0.x
     - uses: pulumi/actions@v6
       name: Install pulumi
-    - run: pulumi stack select -C "${{ env.PULUMI_DIR }}" -c -Q "${{ env.PULUMI_STACK }}"
+    - run: pulumi stack select -C "${{ env.PULUMI_DIR }}" -c -Q "${{ env.PULUMI_REVIEW_STACK }}"
     - uses: pulumi/actions@v6
       with:
         command: up
-        stack-name: "${{ env.PULUMI_STACK }}"
-#        stack-name: "review_pr${{ github.event.pull_request.number }}"
+        stack-name: "${{ env.PULUMI_REVIEW_STACK }}"
         work-dir: "${{ env.PULUMI_DIR }}"
         config-map: "{ \"review_app:stackName\": { value: \"${{ env.PULUMI_STACK }}\", secret: false } }"
       env:
