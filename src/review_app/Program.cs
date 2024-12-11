@@ -11,10 +11,15 @@ return await Pulumi.Deployment.RunAsync(async () =>
 
     var baseRef = new StackReference(stackName);
     var rgName = (string)await baseRef.RequireValueAsync("rg-review-app:name");
+    var rgId = (string)await baseRef.RequireValueAsync("rg-review-app:id");
 
     var resourceGroup = new ResourceGroup(rgName, new()
     {
         ResourceGroupName = rgName
+    }, new()
+    {
+        ImportId = rgId,
+        RetainOnDelete = true
     });
 
     // Create an Azure resource (Storage Account)
