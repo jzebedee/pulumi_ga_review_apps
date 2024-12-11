@@ -67,6 +67,7 @@ jobs:
   destroy-review-base:
     runs-on: ubuntu-latest
     needs: destroy-review
+    if: always()
     env:
       PULUMI_DIR: "src/base"
     steps:
