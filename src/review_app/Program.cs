@@ -55,6 +55,6 @@ return await Pulumi.Deployment.RunAsync(async () =>
     });
 
     return new Dictionary<string, object?>() {
-        { "static-site-url", storageAccount.PrimaryEndpoints.Apply(e => $"{e.Web}/index.html") }
+        { "static-site-url", storageAccount.PrimaryEndpoints.Apply(e => $"{e.Web}index.html") }
     };
 });
