@@ -13,6 +13,7 @@ env:
 jobs:
   get-review-client:
     runs-on: ubuntu-latest
+    if: ${{ github.event.pull_request.merged == true }}
     env:
       PULUMI_DIR: "src/base"
     outputs:
