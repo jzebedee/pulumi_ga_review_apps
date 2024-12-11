@@ -4,6 +4,8 @@ runtime: dotnet
 config:
   azure-native:subscriptionId: 5936ee21-a866-4ab7-bff8-e3f3be976440
   azure-native:location: southcentralus
+  pulumi_ga_review_apps:base_repo: pulumi_ga_review_apps
+  pulumi_ga_review_apps:base_org: jzebedee
   pulumi:tags:
     value:
       pulumi:template: azure-csharp
