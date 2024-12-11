@@ -6,6 +6,9 @@ name: 'Deploy review environment'
 on:
   pull_request:
 
+env:
+  PULUMI_STACK: "${{ vars.PULUMI_ORG }}/pulumi_ga_review_apps/pr${{ github.event.pull_request.number }}"
+
 jobs:
   build-review-base:
     runs-on: ubuntu-latest
@@ -25,11 +28,11 @@ jobs:
         dotnet-version: 8.0.x
     - uses: pulumi/actions@v6
       name: Install pulumi
-    - run: pulumi stack select --create "pr${{ github.event.pull_request.number }}"
+    - run: pulumi stack select --create "${{ env.PULUMI_STACK }}"
     - uses: pulumi/actions@v6
       with:
         command: up
-        stack-name: "pr${{ github.event.pull_request.number }}"
+        stack-name: "${{ env.PULUMI_STACK }}"
         work-dir: src/base
         config-map: "{ \"pulumi_ga_review_apps:pr_number\": { value: \"${{ github.event.pull_request.number }}\", secret: false } }"
       env:
@@ -58,9 +61,9 @@ jobs:
     - uses: pulumi/actions@v6
       with:
         command: up
-        stack-name: "pr${{ github.event.pull_request.number }}"
+        stack-name: "${{ env.PULUMI_STACK }}"
         work-dir: src/review_app
-        config-map: "{ \"review_app:stackName\": { value: \"${{ vars.PULUMI_ORG }}/pulumi_ga_review_apps/pr${{ github.event.pull_request.number }}\", secret: false } }"
+        config-map: "{ \"review_app:stackName\": { value: \"${{ env.PULUMI_STACK }}\", secret: false } }"
       env:
         ARM_USE_OIDC: true
         ARM_CLIENT_ID: ${{ needs.build-review-base.outputs.review_client_id }}
