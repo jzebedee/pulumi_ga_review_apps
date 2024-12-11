@@ -43,6 +43,7 @@ jobs:
         ARM_TENANT_ID: ${{ vars.tenantId }}
     - name: Save stack outputs
       id: review_outputs
+      working-directory: "${{ env.PULUMI_DIR }}"
       run: |
         echo "review_client_id=$(pulumi stack output 'mi-review-app:clientId')" >> "$GITHUB_OUTPUT"
         echo "review_principal_id=$(pulumi stack output 'mi-review-app:principalId')" >> "$GITHUB_OUTPUT"
