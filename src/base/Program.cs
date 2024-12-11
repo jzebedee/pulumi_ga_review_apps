@@ -110,10 +110,10 @@ static (UserAssignedIdentity, ResourceGroup) BuildReviewManagedIdentity(string s
         Subject = $"repo:{oidcOrg}/{oidcRepo}:pull_request",
     });
 
-    const string roleDefinitionId_owner = "8e3af657-a8ff-443c-a75c-2fe8c4bcb635";
+    const string roleDefinitionId_contributor = "b24988ac-6180-42a0-ab88-20f7382dd24c";
 
-    string ra_name = $"ra-owner_{identityName}";
-    string ra_roleDefId = $"/subscriptions/{subscriptionId}/providers/Microsoft.Authorization/roleDefinitions/{roleDefinitionId_owner}";
+    string ra_name = $"ra-contributor_{identityName}";
+    string ra_roleDefId = $"/subscriptions/{subscriptionId}/providers/Microsoft.Authorization/roleDefinitions/{roleDefinitionId_contributor}";
 
     var roleAssignment = new RoleAssignment(ra_name, new()
     {
