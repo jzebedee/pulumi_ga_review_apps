@@ -2,6 +2,7 @@ name: review_app
 description: A minimal Azure Native C# Pulumi program
 runtime: dotnet
 config:
+  azure-native:subscriptionId: 5936ee21-a866-4ab7-bff8-e3f3be976440
   azure-native:location: southcentralus
   pulumi:tags:
     value:
