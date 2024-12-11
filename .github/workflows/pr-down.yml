@@ -35,6 +35,7 @@ jobs:
       working-directory: "${{ env.PULUMI_DIR }}"
       run: |
         echo "review_client_id=$(pulumi stack output 'mi-review-app:clientId')" >> "$GITHUB_OUTPUT"
+
   destroy-review:
     runs-on: ubuntu-latest
     needs: get-review-client
@@ -64,6 +65,9 @@ jobs:
         ARM_USE_OIDC: true
         ARM_CLIENT_ID: ${{ needs.get-review-client.outputs.review_client_id }}
         ARM_TENANT_ID: ${{ vars.tenantId }}
+    - run: pulumi stack rm -C "${{ env.PULUMI_DIR }}" -Q "${{ env.PULUMI_REVIEW_STACK }}" -y
+      name: Delete stack
+
   destroy-review-base:
     runs-on: ubuntu-latest
     needs: destroy-review
@@ -93,3 +97,5 @@ jobs:
         ARM_USE_OIDC: true
         ARM_CLIENT_ID: ${{ vars.clientId }}
         ARM_TENANT_ID: ${{ vars.tenantId }}
+    - run: pulumi stack rm -C "${{ env.PULUMI_DIR }}" -Q "${{ env.PULUMI_STACK }}" -y
+      name: Delete stack
