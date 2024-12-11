@@ -38,6 +38,7 @@ return await Pulumi.Deployment.RunAsync(() =>
         outputs.Add("mi-review-app:clientId", review_mi.ClientId);
         outputs.Add("mi-review-app:principalId", review_mi.PrincipalId);
         outputs.Add("rg-review-app:name", review_rg.Name);
+        outputs.Add("rg-review-app:id", review_rg.Id);
     }
 
     return outputs;
