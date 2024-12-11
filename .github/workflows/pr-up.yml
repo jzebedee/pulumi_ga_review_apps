@@ -12,6 +12,8 @@ env:
 jobs:
   build-review-base:
     runs-on: ubuntu-latest
+    env:
+      PULUMI_DIR: "src/base"
     outputs:
       review_client_id: ${{ steps.base_outputs.outputs.review_client_id }}
       review_principal_id: ${{ steps.base_outputs.outputs.review_principal_id }}
@@ -28,12 +30,12 @@ jobs:
         dotnet-version: 8.0.x
     - uses: pulumi/actions@v6
       name: Install pulumi
-    - run: pulumi stack select --create "${{ env.PULUMI_STACK }}"
+    - run: pulumi stack select -C "${{ env.PULUMI_DIR }}" -c -Q "${{ env.PULUMI_STACK }}"
     - uses: pulumi/actions@v6
       with:
         command: up
         stack-name: "${{ env.PULUMI_STACK }}"
-        work-dir: src/base
+        work-dir: "${{ env.PULUMI_DIR }}"
         config-map: "{ \"pulumi_ga_review_apps:pr_number\": { value: \"${{ github.event.pull_request.number }}\", secret: false } }"
       env:
         ARM_USE_OIDC: true
@@ -61,7 +63,7 @@ jobs:
     - uses: pulumi/actions@v6
       with:
         command: up
-        stack-name: "${{ env.PULUMI_STACK }}"
+        stack-name: "review_pr${{ github.event.pull_request.number }}"
         work-dir: src/review_app
         config-map: "{ \"review_app:stackName\": { value: \"${{ env.PULUMI_STACK }}\", secret: false } }"
       env:
