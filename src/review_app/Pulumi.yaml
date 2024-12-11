@@ -1,0 +1,8 @@
+name: review_app
+description: A minimal Azure Native C# Pulumi program
+runtime: dotnet
+config:
+  azure-native:location: southcentralus
+  pulumi:tags:
+    value:
+      pulumi:template: azure-csharp
