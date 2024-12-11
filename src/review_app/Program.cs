@@ -30,24 +30,31 @@ return await Pulumi.Deployment.RunAsync(async () =>
         {
             Name = SkuName.Standard_LRS
         },
-        Kind = Kind.StorageV2
+        Kind = Kind.StorageV2,
+        EnableHttpsTrafficOnly = true
     });
 
-    var storageAccountKeys = ListStorageAccountKeys.Invoke(new ListStorageAccountKeysInvokeArgs
+    // Enable static website hosting on the storage account
+    var staticWebsite = new StorageAccountStaticWebsite("staticWebsite", new StorageAccountStaticWebsiteArgs
+    {
+        AccountName = storageAccount.Name,
+        ResourceGroupName = resourceGroup.Name,
+        IndexDocument = "index.html",
+    });
+
+    var (project, stack) = (Pulumi.Deployment.Instance.ProjectName, Pulumi.Deployment.Instance.StackName);
+
+    // Upload the `index.html` file to the Blob Container
+    var indexBlob = new Blob("index.html", new()
     {
         ResourceGroupName = resourceGroup.Name,
-        AccountName = storageAccount.Name
+        AccountName = storageAccount.Name,
+        ContainerName = staticWebsite.ContainerName,
+        ContentType = "text/html",
+        Source = new StringAsset($"<h1>Hello from project {project} on stack {stack}</h1>")
     });
 
-    var primaryStorageKey = storageAccountKeys.Apply(accountKeys =>
-    {
-        var firstKey = accountKeys.Keys[0].Value;
-        return Output.CreateSecret(firstKey);
-    });
-
-    // Export the primary key of the Storage Account
-    return new Dictionary<string, object?>
-    {
-        ["primaryStorageKey"] = primaryStorageKey
+    return new Dictionary<string, object?>() {
+        { "static-site-url", storageAccount.PrimaryEndpoints.Apply(e => $"{e.Web}/index.html") }
     };
 });
