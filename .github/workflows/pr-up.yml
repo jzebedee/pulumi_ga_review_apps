@@ -25,7 +25,7 @@ jobs:
       with:
         organization: ${{ vars.pulumi_org }}
         scope: ${{ vars.pulumi_scope }}
-        requested-token-type: urn:pulumi:token-type:access_token:personal
+        requested-token-type: ${{ vars.pulumi_token_type }}
     - uses: actions/setup-dotnet@v4
       with: 
         dotnet-version: 8.0.x
@@ -62,7 +62,7 @@ jobs:
       with:
         organization: ${{ vars.pulumi_org }}
         scope: ${{ vars.pulumi_scope }}
-        requested-token-type: urn:pulumi:token-type:access_token:personal
+        requested-token-type: ${{ vars.pulumi_token_type }}
     - uses: actions/setup-dotnet@v4
       with: 
         dotnet-version: 8.0.x
