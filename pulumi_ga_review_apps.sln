@@ -7,6 +7,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{A5F4C67A-BE5
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "pulumi_ga_review_apps", "src\base\pulumi_ga_review_apps.csproj", "{0D0DBCF0-C7E6-4564-8CB0-5493953F8E59}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "review_app", "src\review_app\review_app.csproj", "{CFE78BC7-FB15-4082-9261-BC121C3D023D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,12 +19,17 @@ Global
 		{0D0DBCF0-C7E6-4564-8CB0-5493953F8E59}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0D0DBCF0-C7E6-4564-8CB0-5493953F8E59}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0D0DBCF0-C7E6-4564-8CB0-5493953F8E59}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CFE78BC7-FB15-4082-9261-BC121C3D023D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CFE78BC7-FB15-4082-9261-BC121C3D023D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CFE78BC7-FB15-4082-9261-BC121C3D023D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CFE78BC7-FB15-4082-9261-BC121C3D023D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{0D0DBCF0-C7E6-4564-8CB0-5493953F8E59} = {A5F4C67A-BE58-4F66-9CDB-790875BA7950}
+		{CFE78BC7-FB15-4082-9261-BC121C3D023D} = {A5F4C67A-BE58-4F66-9CDB-790875BA7950}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0FB6B65A-373E-4F9C-9F5A-54D42FC71E37}
