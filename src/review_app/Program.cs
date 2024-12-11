@@ -1,20 +1,23 @@
 ﻿using Pulumi;
+using Pulumi.AzureNative.Resources;
 using Pulumi.AzureNative.Storage;
 using Pulumi.AzureNative.Storage.Inputs;
 using System.Collections.Generic;
 
-return await Pulumi.Deployment.RunAsync(() =>
+return await Pulumi.Deployment.RunAsync(async () =>
 {
     var config = new Pulumi.Config();
     var stackName = config.Require("stackName");
 
     var baseRef = new StackReference(stackName);
-    var rgName = baseRef.RequireOutput("rg-review-app:name").Apply<string>(o => o.ToString());
+    var rgName = (string)await baseRef.RequireValueAsync("rg-review-app:name");
+
+    var resourceGroup = new ResourceGroup(rgName);
 
     // Create an Azure resource (Storage Account)
     var storageAccount = new StorageAccount("sa", new StorageAccountArgs
     {
-        ResourceGroupName = rgName,
+        ResourceGroupName = resourceGroup.Name,
         Sku = new SkuArgs
         {
             Name = SkuName.Standard_LRS
@@ -24,7 +27,7 @@ return await Pulumi.Deployment.RunAsync(() =>
 
     var storageAccountKeys = ListStorageAccountKeys.Invoke(new ListStorageAccountKeysInvokeArgs
     {
-        ResourceGroupName = rgName,
+        ResourceGroupName = resourceGroup.Name,
         AccountName = storageAccount.Name
     });
 
