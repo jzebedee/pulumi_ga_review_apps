@@ -1,0 +1,94 @@
+permissions:
+  id-token: write
+  contents: read
+
+name: 'Destroy review environment'
+on:
+  pull_request_target:
+    types: [closed]
+
+env:
+  PULUMI_STACK: "${{ vars.PULUMI_ORG }}/pulumi_ga_review_apps/pr${{ github.event.pull_request.number }}"
+
+jobs:
+  get-review-client:
+    runs-on: ubuntu-latest
+    env:
+      PULUMI_DIR: "src/base"
+    outputs:
+      review_client_id: ${{ steps.review_outputs.outputs.review_client_id }}
+    steps:
+    - uses: actions/checkout@v4
+    - uses: pulumi/auth-actions@v1
+      with:
+        organization: ${{ vars.pulumi_org }}
+        scope: ${{ vars.pulumi_scope }}
+        requested-token-type: urn:pulumi:token-type:access_token:personal
+    - uses: actions/setup-dotnet@v4
+      with: 
+        dotnet-version: 8.0.x
+    - uses: pulumi/actions@v6
+      name: Install pulumi
+    - run: pulumi stack select -C "${{ env.PULUMI_DIR }}" -Q "${{ env.PULUMI_STACK }}"
+    - name: Save stack outputs
+      id: review_outputs
+      working-directory: "${{ env.PULUMI_DIR }}"
+      run: |
+        echo "review_client_id=$(pulumi stack output 'mi-review-app:clientId')" >> "$GITHUB_OUTPUT"
+  destroy-review:
+    runs-on: ubuntu-latest
+    needs: get-review-client
+    env:
+      PULUMI_DIR: "src/review_app"
+      PULUMI_REVIEW_STACK: "review_pr${{ github.event.pull_request.number }}"
+    steps:
+    - uses: actions/checkout@v4
+    - uses: pulumi/auth-actions@v1
+      with:
+        organization: ${{ vars.pulumi_org }}
+        scope: ${{ vars.pulumi_scope }}
+        requested-token-type: urn:pulumi:token-type:access_token:personal
+    - uses: actions/setup-dotnet@v4
+      with: 
+        dotnet-version: 8.0.x
+    - uses: pulumi/actions@v6
+      name: Install pulumi
+    - run: pulumi stack select -C "${{ env.PULUMI_DIR }}" -Q "${{ env.PULUMI_REVIEW_STACK }}"
+    - uses: pulumi/actions@v6
+      with:
+        command: destroy
+        stack-name: "${{ env.PULUMI_REVIEW_STACK }}"
+        work-dir: "${{ env.PULUMI_DIR }}"
+        config-map: "{ \"review_app:stackName\": { value: \"${{ env.PULUMI_STACK }}\", secret: false } }"
+      env:
+        ARM_USE_OIDC: true
+        ARM_CLIENT_ID: ${{ needs.get-review-client.outputs.review_client_id }}
+        ARM_TENANT_ID: ${{ vars.tenantId }}
+  destroy-review-base:
+    runs-on: ubuntu-latest
+    needs: destroy-review
+    env:
+      PULUMI_DIR: "src/base"
+    steps:
+    - uses: actions/checkout@v4
+    - uses: pulumi/auth-actions@v1
+      with:
+        organization: ${{ vars.pulumi_org }}
+        scope: ${{ vars.pulumi_scope }}
+        requested-token-type: urn:pulumi:token-type:access_token:personal
+    - uses: actions/setup-dotnet@v4
+      with: 
+        dotnet-version: 8.0.x
+    - uses: pulumi/actions@v6
+      name: Install pulumi
+    - run: pulumi stack select -C "${{ env.PULUMI_DIR }}" -Q "${{ env.PULUMI_STACK }}"
+    - uses: pulumi/actions@v6
+      with:
+        command: destroy
+        stack-name: "${{ env.PULUMI_STACK }}"
+        work-dir: "${{ env.PULUMI_DIR }}"
+        config-map: "{ \"pulumi_ga_review_apps:pr_number\": { value: \"${{ github.event.pull_request.number }}\", secret: false } }"
+      env:
+        ARM_USE_OIDC: true
+        ARM_CLIENT_ID: ${{ vars.clientId }}
+        ARM_TENANT_ID: ${{ vars.tenantId }}
